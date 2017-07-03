@@ -15,15 +15,13 @@ contract Operations {
     balances[msg.sender] = msg.value;
   }
 
-  function withdraw(uint value) {
+  function withdraw(uint value) payable {
     uint amount = balances[msg.sender];
     
-    if (value < amount) {
-      amount = value;
-    }
+    assert(value <= amount);
     
-    balances[msg.sender] -= amount;
-    msg.sender.transfer(amount);
+    balances[msg.sender] -= value;
+    msg.sender.transfer(value);
   }
 
   function startCall() {

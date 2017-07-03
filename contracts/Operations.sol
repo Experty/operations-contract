@@ -34,4 +34,8 @@ contract Operations {
 
   }
 
+  function getBalance() returns (uint balance) {
+    return balances[msg.sender];
+  }
+
 }

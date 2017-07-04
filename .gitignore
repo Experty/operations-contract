@@ -13,3 +13,6 @@ Thumbs.db
 
 # build
 /build
+
+# node packages
+node_modules

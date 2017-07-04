@@ -1,18 +1,14 @@
+# Consultations Network
 
-### Development
+## Installation
+1. Install Parity https://parity.io/parity.html
+2. run `npm install` to set up dependencies
 
-Install parity https://parity.io/parity.html
+## Development
+1. Run parity testnet `parity --geth --chain dev --force-ui --reseal-min-period 0 --jsonrpc-cors http://localhost`
+2. Run gulp watcher `npm start`
 
-Run parity testnet
+## Testing
+*Note: the tests are using the 'async/await' syntax supported from node v7.6 and will fail to run on older versions*
 
-```
-parity --geth --chain dev --force-ui --reseal-min-period 0 --jsonrpc-cors http://localhost
-```
-
-Run tests
-
-Note: the tests are using the 'async/await' syntax supported from node v7.6 and will fail to run on older versions
-
-1. Run testrpc: `testrpc`
-
-2. Run test suite(in another tab/terminal): `truffle test`
+Just run `npm  test`, test are also automatically executed on file changes

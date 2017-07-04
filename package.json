@@ -1,0 +1,27 @@
+{
+  "name": "cn-tge-contract",
+  "version": "1.0.0",
+  "description": "Install parity https://parity.io/parity.html",
+  "main": "truffle.js",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "start": "gulp watch",
+    "test": "truffle test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ConsultationsNetwork/cn-tge-contract.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/ConsultationsNetwork/cn-tge-contract/issues"
+  },
+  "homepage": "https://github.com/ConsultationsNetwork/cn-tge-contract#readme",
+  "dependencies": {
+    "gulp": "^3.9.1",
+    "gulp-run": "^1.7.1"
+  }
+}

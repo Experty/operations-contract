@@ -4,6 +4,7 @@ pragma solidity ^0.4.4;
 contract Operations {
 
   mapping (address => uint) balances;
+  mapping (address => bool) activeCalls;
 
   // mapping(address => mapping (address => uint256)) allowed;
 
@@ -12,7 +13,7 @@ contract Operations {
   }
 
   function deposit() payable {
-    balances[msg.sender] = msg.value;
+    balances[msg.sender] += msg.value;
   }
 
   function withdraw(uint value) payable {
@@ -24,7 +25,9 @@ contract Operations {
     msg.sender.transfer(value);
   }
 
-  function startCall() {
+  function startCall(address recipient, uint rate) {
+    activeCalls[recipient] = true;
+    activeCalls[msg.sender] = true;
 
   }
 

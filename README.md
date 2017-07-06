@@ -2,7 +2,7 @@
 
 ## Installation
 1. Install Parity https://parity.io/parity.html
-2. run `npm install` to set up dependencies
+2. Run `npm install` to set up dependencies
 
 ## Development
 1. Run parity testnet `parity --geth --chain dev --force-ui --reseal-min-period 0 --jsonrpc-cors http://localhost`

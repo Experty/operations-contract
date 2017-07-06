@@ -2,7 +2,7 @@ const Operations = artifacts.require('./Operations')
 
 contract('Operations', accounts => {
   let instance = null
-  beforeEach(async () => instance = await Operations.deployed())
+  beforeEach(async () => instance = await Operations.new())
   afterEach(() => instance = null)
 
   it('should deposit 1000 coins in the first account', async () => {

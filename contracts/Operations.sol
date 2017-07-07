@@ -11,7 +11,7 @@ contract Operations {
   }
 
   mapping(address => mapping (address => Call)) calls;
-
+  mapping (address => bool) activeCallers;
 
   function Operations() {
 
@@ -31,6 +31,8 @@ contract Operations {
   }
 
   function startCall(address caller, address recipient, uint ratePerS, uint timestamp) {
+    assert(!activeCallers[caller]); // make sure that the caller doesn't call 2 people at the same time
+    activeCallers[caller] = true;
     calls[caller][recipient] = Call({
       ratePerS: ratePerS,
       timestamp: timestamp

@@ -23,6 +23,10 @@ contract Operations {
   }
 
   function withdraw(uint value) payable {
+
+    // dont allow to withdraw any balance if user have active call
+    assert(!activeCaller[msg.sender]);
+
     uint balance = balances[msg.sender];
 
     // throw if balance is lower than requested value

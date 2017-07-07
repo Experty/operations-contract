@@ -4,6 +4,7 @@ pragma solidity ^0.4.4;
 contract Operations {
 
   mapping (address => uint) balances;
+  mapping (address => bool) activeCaller;
 
   struct Call {
     uint ratePerS;
@@ -32,6 +33,12 @@ contract Operations {
   }
 
   function startCall(address caller, address recipient, uint ratePerS, uint timestamp) {
+    
+    // caller can have only 1 active call
+    assert(!activeCaller[caller]);
+
+    activeCaller[caller] = true;
+
     calls[caller][recipient] = Call({
       ratePerS: ratePerS,
       timestamp: timestamp

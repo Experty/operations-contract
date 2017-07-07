@@ -4,9 +4,14 @@ pragma solidity ^0.4.4;
 contract Operations {
 
   mapping (address => uint) balances;
-  mapping (address => bool) activeCalls;
 
-  // mapping(address => mapping (address => uint256)) allowed;
+  struct Call {
+    uint ratePerS;
+    uint timestamp;
+  }
+
+  mapping(address => mapping (address => Call)) calls;
+
 
   function Operations() {
     
@@ -25,14 +30,15 @@ contract Operations {
     msg.sender.transfer(value);
   }
 
-  function startCall(address recipient, uint rate) {
-    activeCalls[recipient] = true;
-    activeCalls[msg.sender] = true;
-
+  function startCall(address caller, address recipient, uint ratePerS, uint timestamp) {
+    calls[caller][recipient] = new Call({
+      ratePerS: ratePerS,
+      timestamp: timestamp
+    });
   }
 
-  function endCall() {
-
+  function endCall(address caller, address recipient, uint timestamp) {
+    uint duration = timestamp - calls[caller][recipient].timestamp;
   }
 
   function getBalance() returns (uint balance) {

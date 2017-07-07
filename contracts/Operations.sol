@@ -50,7 +50,23 @@ contract Operations {
   }
 
   function endCall(address caller, address recipient, uint timestamp) {
-    uint duration = timestamp - calls[caller][recipient].timestamp;
+
+    Call call = calls[caller][recipient];
+
+    uint duration = timestamp - call.timestamp;
+    uint cost = duration * call.ratePerS;
+
+    uint maxCost = cost;
+    if (maxCost > balances[caller]) {
+      maxCost = balances[caller];
+    }
+
+    settlePayment(caller, recipient, maxCost);
+  }
+
+  private function settlePayment(sender, recipient, value) {
+    balances[sender] -= value;
+    balances[recipient] += value;
   }
 
   function getBalance() returns (uint balance) {

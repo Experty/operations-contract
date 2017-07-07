@@ -69,13 +69,17 @@ contract Operations {
     balances[recipient] += value;
   }
 
+  // read only getters
   function getBalance() returns (uint balance) {
     return balances[msg.sender];
   }
-  
+
   function getBalance(address account) returns (uint balance) {
     return balances[account];
   }
 
+  function getActiveCall(address caller, address recipient) returns (Call call) {
+    return calls[caller][recipient];
+  }
 
 }

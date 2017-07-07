@@ -14,7 +14,7 @@ contract Operations {
 
 
   function Operations() {
-    
+
   }
 
   function deposit() payable {
@@ -23,15 +23,15 @@ contract Operations {
 
   function withdraw(uint value) payable {
     uint amount = balances[msg.sender];
-    
+
     assert(value <= amount);
-    
+
     balances[msg.sender] -= value;
     msg.sender.transfer(value);
   }
 
   function startCall(address caller, address recipient, uint ratePerS, uint timestamp) {
-    calls[caller][recipient] = new Call({
+    calls[caller][recipient] = Call({
       ratePerS: ratePerS,
       timestamp: timestamp
     });

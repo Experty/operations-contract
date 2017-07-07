@@ -72,5 +72,10 @@ contract Operations {
   function getBalance() returns (uint balance) {
     return balances[msg.sender];
   }
+  
+  function getBalance(address account) returns (uint balance) {
+    return balances[account];
+  }
+
 
 }

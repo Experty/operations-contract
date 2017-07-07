@@ -4,6 +4,7 @@ pragma solidity ^0.4.4;
 contract Operations {
 
   mapping (address => uint) balances;
+  mapping (address => bool) activeCaller;
 
   struct Call {
     uint ratePerS;
@@ -22,6 +23,10 @@ contract Operations {
   }
 
   function withdraw(uint value) payable {
+
+    // dont allow to withdraw any balance if user have active call
+    assert(!activeCaller[msg.sender]);
+
     uint balance = balances[msg.sender];
 
     // throw if balance is lower than requested value
@@ -32,8 +37,12 @@ contract Operations {
   }
 
   function startCall(address caller, address recipient, uint ratePerS, uint timestamp) {
-    assert(!activeCallers[caller]); // make sure that the caller doesn't call 2 people at the same time
-    activeCallers[caller] = true;
+
+    // caller can have only 1 active call
+    assert(!activeCaller[caller]);
+
+    activeCaller[caller] = true;
+
     calls[caller][recipient] = Call({
       ratePerS: ratePerS,
       timestamp: timestamp

@@ -22,9 +22,10 @@ contract Operations {
   }
 
   function withdraw(uint value) payable {
-    uint amount = balances[msg.sender];
+    uint balance = balances[msg.sender];
 
-    assert(value <= amount);
+    // throw if balance is lower than requested value
+    assert(value <= balance);
 
     balances[msg.sender] -= value;
     msg.sender.transfer(value);

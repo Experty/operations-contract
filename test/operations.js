@@ -23,7 +23,7 @@ contract('Operations', accounts => {
     await instance.deposit({ value: 500 })
     await instance
       .withdraw(1000)
-      .then(tx => assert(!tx))
+      .then(tx => { throw new Error() })
       .catch(e => assert(e instanceof Error))
   })
 
@@ -31,7 +31,7 @@ contract('Operations', accounts => {
     await instance.startCall(accounts[0], accounts[1], 200, Date.now())
     await instance
       .startCall(accounts[0], accounts[1], 200, Date.now())
-      .then(tx => assert(!tx))
+      .then(tx => { throw new Error() })
       .catch(e => assert(e instanceof Error))
   })
 

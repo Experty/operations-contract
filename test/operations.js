@@ -8,16 +8,16 @@ contract('Operations', accounts => {
   afterEach(() => instance = null)
 
   it('should deposit 1000 coins in the first account', async () => {
-    const balanceBeforeDeposit = await instance.getBalance.call(accounts[0]).then(balance => balance.toNumber())
+    const balanceBeforeDeposit = await instance.getBalance.call().then(balance => balance.toNumber())
     await instance.deposit({ value: 1000 })
-    const balanceAfterDeposit = await instance.getBalance.call(accounts[0]).then(balance => balance.toNumber())
+    const balanceAfterDeposit = await instance.getBalance.call().then(balance => balance.toNumber())
     assert.equal(balanceAfterDeposit, balanceBeforeDeposit + 1000)
   })
 
   it('should withdraw the requested amount', async () => {
     await instance.deposit({ value: 1000 })
     await instance.withdraw(500)
-    const balanceAfterWithdrawal = await instance.getBalance.call(accounts[0]).then(balance => balance.toNumber())
+    const balanceAfterWithdrawal = await instance.getBalance.call().then(balance => balance.toNumber())
     assert.equal(balanceAfterWithdrawal, 500)
   })
 
@@ -39,17 +39,18 @@ contract('Operations', accounts => {
 
   it('should pay the recipient after the call', async () => {
     const depositedValue = 1000000
-    const cost = 300
+    const costPerS = 300
     const startTimestamp = getTimestampInSeconds()
     await instance.deposit({ value: depositedValue })
-    await instance.startCall(accounts[0], accounts[1], cost, startTimestamp)
+    await instance.startCall(accounts[0], accounts[1], costPerS, startTimestamp)
     await sleep(3000)
     const endTimestamp = getTimestampInSeconds()
+    const callPrice = (endTimestamp - startTimestamp) * costPerS
     await instance.endCall(accounts[0], accounts[1], endTimestamp)
     const acc1bal = await instance.getBalance.call({ from: accounts[1] }).then(bal => bal.toNumber())
     const acc0bal = await instance.getBalance.call({ from: accounts[0] }).then(bal => bal.toNumber())
-    assert.equal(acc1bal, 900)
-    assert.equal(acc0bal, 999100)
+    assert.equal(acc1bal, callPrice)
+    assert.equal(acc0bal, depositedValue - callPrice)
   })
 
 })

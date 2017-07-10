@@ -50,8 +50,8 @@ contract Operations {
   }
 
   function endCall(address caller, address recipient, uint timestamp) {
-
     Call call = calls[caller][recipient];
+    require(timestamp > call.timestamp);
 
     uint duration = timestamp - call.timestamp;
     uint cost = duration * call.ratePerS;

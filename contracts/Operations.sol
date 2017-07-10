@@ -64,7 +64,7 @@ contract Operations {
     settlePayment(caller, recipient, maxCost);
   }
 
-  private function settlePayment(sender, recipient, value) {
+  function settlePayment(address sender, address recipient, uint value) private {
     balances[sender] -= value;
     balances[recipient] += value;
   }

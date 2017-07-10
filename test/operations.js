@@ -1,4 +1,6 @@
 const Operations = artifacts.require('./Operations')
+const getTimestampInSeconds = () => Math.floor(Date.now() / 1000)
+const sleep = time => new Promise((resolve, reject) => setTimeout(resolve, time))
 
 contract('Operations', accounts => {
   let instance = null
@@ -33,6 +35,21 @@ contract('Operations', accounts => {
       .startCall(accounts[0], accounts[1], 200, Date.now())
       .then(tx => { throw new Error() })
       .catch(e => assert(e instanceof Error))
+  })
+
+  it('should pay the recipient after the call', async () => {
+    const depositedValue = 1000000
+    const cost = 300
+    const startTimestamp = getTimestampInSeconds()
+    await instance.deposit({ value: depositedValue })
+    await instance.startCall(accounts[0], accounts[1], cost, startTimestamp)
+    await sleep(3000)
+    const endTimestamp = getTimestampInSeconds()
+    await instance.endCall(accounts[0], accounts[1], endTimestamp)
+    const acc1bal = await instance.getBalance.call({ from: accounts[1] }).then(bal => bal.toNumber())
+    const acc0bal = await instance.getBalance.call({ from: accounts[0] }).then(bal => bal.toNumber())
+    assert.equal(acc1bal, 900)
+    assert.equal(acc0bal, 999100)
   })
 
 })

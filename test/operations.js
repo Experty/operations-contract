@@ -21,11 +21,18 @@ contract('Operations', accounts => {
 
   it('should not allow withdraw more than deposited value', async () => {
     await instance.deposit({ value: 500 })
-    // instance.withdraw(1000).then(assert.fail)
+    await instance
+      .withdraw(1000)
+      .then(tx => assert(!tx))
+      .catch(e => assert(e instanceof Error))
   })
 
   it('should not allow making two calls at the same time', async () => {
     await instance.startCall(accounts[0], accounts[1], 200, Date.now())
-    instance.startCall(accounts[0], accounts[2], 200, Date.now()).then(assert.fail)
+    await instance
+      .startCall(accounts[0], accounts[1], 200, Date.now())
+      .then(tx => assert(!tx))
+      .catch(e => assert(e instanceof Error))
   })
+
 })

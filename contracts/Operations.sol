@@ -74,10 +74,6 @@ contract Operations {
     return balances[msg.sender];
   }
 
-  function getBalance(address account) returns (uint balance) {
-    return balances[account];
-  }
-
   function getActiveCall(address caller, address recipient) internal returns (Call call) {
     return calls[caller][recipient];
   }

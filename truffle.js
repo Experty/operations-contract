@@ -5,10 +5,15 @@ module.exports = {
       port: 8545,
       network_id: "*" // Match any network id
     },
-    ec2: {
-      host: "ec2-52-28-244-15.eu-central-1.compute.amazonaws.com",
+    live: {
+      host: "localhost",
       port: 8545,
-      network_id: "*"
+      network_id: 1
+    },
+    bcn: {
+      host: "ec2-52-29-139-157.eu-central-1.compute.amazonaws.com",
+      port: 8545,
+      network_id: 1
     }
   }
 };

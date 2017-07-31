@@ -9,7 +9,7 @@
 1. Run parity testnet `parity --geth --chain dev --force-ui --reseal-min-period 0 --jsonrpc-cors http://localhost`
 2. Run gulp watcher `npm start`
 
-# compile & deploy contract
+### compile & deploy contract
 ```
 truffle compile
 truffle migrate

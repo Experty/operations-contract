@@ -3,19 +3,16 @@ pragma solidity ^0.4.4;
 
 contract Operations {
 
-  mapping (address => uint) balances;
-  mapping (address => bool) activeCaller;
-
   struct Call {
     uint ratePerS;
     uint timestamp;
   }
 
-  mapping(address => mapping (address => Call)) calls;
-  mapping (address => bool) activeCallers;
+  mapping (address => uint) public balances;
+  mapping (address => bool) public activeCaller;
+  mapping(address => mapping (address => Call)) public calls;
 
   function Operations() {
-
   }
 
   function deposit() payable {
@@ -68,12 +65,7 @@ contract Operations {
     balances[sender] -= value;
     balances[recipient] += value;
   }
-
-  // read only getters
-  function getBalance() returns (uint balance) {
-    return balances[msg.sender];
-  }
-
+  
   function getActiveCall(address caller, address recipient) internal returns (Call call) {
     return calls[caller][recipient];
   }

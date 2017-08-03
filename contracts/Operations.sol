@@ -58,6 +58,8 @@ contract Operations {
       maxCost = balances[caller];
     }
 
+    activeCaller[caller] = false;
+
     settlePayment(caller, recipient, maxCost);
   }
 

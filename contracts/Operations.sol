@@ -58,8 +58,15 @@ contract Operations {
       require(timestamp < block.timestamp);
     }
 
+    if (sender == msg.sender) {
+      // should be used previous block timestamp here instead -15s diff
+      uint prevBlockTimestamp = block.timestamp - 15s;
+      require(prevBlockTimestamp < timestamp);
+    }
+
+    block.number
+
     Call memory call = calls[caller][recipient];
-    require(timestamp > call.timestamp);
 
     uint duration = timestamp - call.timestamp;
     uint cost = duration * call.ratePerS;

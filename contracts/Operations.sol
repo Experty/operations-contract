@@ -10,7 +10,7 @@ contract Operations {
 
   mapping (address => uint) public balances;
   mapping (address => bool) public activeCaller;
-  mapping(address => mapping (address => Call)) public calls;
+  mapping (address => mapping (address => Call)) public calls;
 
   function Operations() {
   }
@@ -19,7 +19,7 @@ contract Operations {
     balances[msg.sender] += msg.value;
   }
 
-  function withdraw(uint value) payable {
+  function withdraw(uint value) {
 
     // dont allow to withdraw any balance if user have active call
     assert(!activeCaller[msg.sender]);
@@ -38,6 +38,9 @@ contract Operations {
     // caller can have only 1 active call
     assert(!activeCaller[caller]);
 
+    // only caller can init the call
+    assert(caller == msg.sender);
+
     activeCaller[caller] = true;
 
     calls[caller][recipient] = Call({
@@ -47,7 +50,15 @@ contract Operations {
   }
 
   function endCall(address caller, address recipient, uint timestamp) {
-    Call call = calls[caller][recipient];
+
+    // only caller can init the call
+    assert(caller == msg.sender || recipient == msg.sender);
+
+    if (recipient == msg.sender) {
+      require(timestamp < block.timestamp);
+    }
+
+    Call memory call = calls[caller][recipient];
     require(timestamp > call.timestamp);
 
     uint duration = timestamp - call.timestamp;

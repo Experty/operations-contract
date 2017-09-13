@@ -6,6 +6,7 @@ contract Operations {
   struct Call {
     uint ratePerS;
     uint timestamp;
+    bool isFinished;
   }
 
   mapping (address => uint) public balances;
@@ -66,6 +67,9 @@ contract Operations {
 
     Call memory call = calls[caller][recipient];
 
+    // cant finish call twice
+    assert(!call.isFinished);
+
     uint duration = timestamp - call.timestamp;
     uint cost = duration * call.ratePerS;
 
@@ -77,6 +81,8 @@ contract Operations {
     activeCaller[caller] = false;
 
     settlePayment(caller, recipient, maxCost);
+
+    call.isFinished = true;
   }
 
   function settlePayment(address sender, address recipient, uint value) private {

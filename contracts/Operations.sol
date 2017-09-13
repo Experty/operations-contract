@@ -58,13 +58,11 @@ contract Operations {
       require(timestamp < block.timestamp);
     }
 
-    if (sender == msg.sender) {
+    if (caller == msg.sender) {
       // should be used previous block timestamp here instead -15s diff
-      uint prevBlockTimestamp = block.timestamp - 15s;
+      uint prevBlockTimestamp = block.timestamp - 15 seconds;
       require(prevBlockTimestamp < timestamp);
     }
-
-    block.number
 
     Call memory call = calls[caller][recipient];
 

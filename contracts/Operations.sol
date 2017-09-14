@@ -75,11 +75,6 @@ contract Operations {
 
     Call memory call = calls[caller][recipient];
 
-    if (call) {
-      Error('Call was not started yet');
-      throw;
-    }
-
     // cant finish call twice
     if (call.isFinished) {
       Error('Can`t finish single call more than once');

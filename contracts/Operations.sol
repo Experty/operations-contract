@@ -90,10 +90,9 @@ contract Operations {
     }
 
     activeCaller[caller] = false;
+    calls[caller][recipient].isFinished = true;
 
     settlePayment(caller, recipient, maxCost);
-
-    call.isFinished = true;
   }
 
   function settlePayment(address sender, address recipient, uint value) private {

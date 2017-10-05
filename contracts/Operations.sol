@@ -1,5 +1,6 @@
 pragma solidity ^0.4.4;
 
+// kovan: 0xb6fa3691aee472a636ac8130f86da12e748aff94
 
 contract Operations {
 
@@ -63,11 +64,26 @@ contract Operations {
     settlePayment(caller, recipient, maxCost);
   }
 
+  function transfer(address addr, uint256 value) public payable {
+    // dont allow to transfer any balance if user have active call
+    assert(!activeCaller[msg.sender]);
+
+    deposit();
+
+    uint balance = balances[msg.sender];
+
+    // throw if balance is lower than requested value
+    assert(value <= balance);
+
+    balances[msg.sender] -= value;
+    addr.transfer(value);
+  }
+
   function settlePayment(address sender, address recipient, uint value) private {
     balances[sender] -= value;
     balances[recipient] += value;
   }
-  
+
   function getActiveCall(address caller, address recipient) internal returns (Call call) {
     return calls[caller][recipient];
   }

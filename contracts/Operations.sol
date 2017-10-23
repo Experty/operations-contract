@@ -1,6 +1,6 @@
 pragma solidity ^0.4.4;
 
-// kovan: 
+// kovan: 0x348a637f925a1e0e43b903a66b967ffcb0f85de6
 
 
  /*

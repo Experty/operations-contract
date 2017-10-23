@@ -3,11 +3,7 @@ pragma solidity ^0.4.4;
 // kovan: 0x2F3656F60bc6862f2E675a8c8cca354524d53c46
 
 
- /*
- * Contract that is working with ERC223 tokens
- */
 contract ERC223Token {
-  function tokenFallback(address _from, uint _value, bytes _data) public;
   function transfer(address _from, uint _value, bytes _data) public;
 }
 

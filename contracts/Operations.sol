@@ -1,6 +1,6 @@
 pragma solidity ^0.4.4;
 
-// kovan: 0x348a637f925a1e0e43b903a66b967ffcb0f85de6
+// kovan: 0x2F3656F60bc6862f2E675a8c8cca354524d53c46
 
 
  /*
@@ -38,7 +38,7 @@ contract Operations {
   // falback for EXY deposits
   function tokenFallback(address _from, uint _value, bytes _data) public {
     balances[_from] += _value;
-  };
+  }
 
   function withdraw(uint value) public {
     // dont allow to withdraw any balance if user have active call

@@ -1,6 +1,15 @@
 pragma solidity ^0.4.4;
 
-// kovan: 0xb6fa3691aee472a636ac8130f86da12e748aff94
+// kovan: 
+
+
+ /*
+ * Contract that is working with ERC223 tokens
+ */
+contract ERC223Token {
+  function tokenFallback(address _from, uint _value, bytes _data) public;
+  function transfer(address _from, uint _value, bytes _data) public;
+}
 
 contract Operations {
 
@@ -11,16 +20,24 @@ contract Operations {
 
   mapping (address => uint) public balances;
   mapping (address => bool) public activeCaller;
-  mapping(address => mapping (address => Call)) public calls;
+  mapping (address => mapping (address => Call)) public calls;
 
-  function Operations() {
+  ERC223Token public exy;
+
+  function Operations() public {
+    exy = ERC223Token(0x1cB96a14c8f2dfdb198E3Bd0780f9fd69afD239f);
   }
 
-  function deposit() payable {
-    balances[msg.sender] += msg.value;
-  }
+  // function deposit() payable {
+  //   balances[msg.sender] += msg.value;
+  // }
 
-  function withdraw(uint value) payable {
+  // falback for EXY deposits
+//   function tokenFallback(address _from, uint _value, bytes _data) public {
+//     balances[_from] += _value;
+//   };
+
+  function withdraw(uint value) public {
 
     // dont allow to withdraw any balance if user have active call
     assert(!activeCaller[msg.sender]);
@@ -31,10 +48,11 @@ contract Operations {
     assert(value <= balance);
 
     balances[msg.sender] -= value;
-    msg.sender.transfer(value);
+    bytes memory empty;
+    exy.transfer(msg.sender, value, empty);
   }
 
-  function startCall(address caller, address recipient, uint ratePerS, uint timestamp) {
+  function startCall(address caller, address recipient, uint ratePerS, uint timestamp) public {
 
     // caller can have only 1 active call
     assert(!activeCaller[caller]);
@@ -47,8 +65,8 @@ contract Operations {
     });
   }
 
-  function endCall(address caller, address recipient, uint timestamp) {
-    Call call = calls[caller][recipient];
+  function endCall(address caller, address recipient, uint timestamp) public {
+    Call memory call = calls[caller][recipient];
     require(timestamp > call.timestamp);
 
     uint duration = timestamp - call.timestamp;
@@ -64,11 +82,9 @@ contract Operations {
     settlePayment(caller, recipient, maxCost);
   }
 
-  function transfer(address addr, uint256 value) public payable {
+  function transfer(address addr, uint256 value) public {
     // dont allow to transfer any balance if user have active call
     assert(!activeCaller[msg.sender]);
-
-    deposit();
 
     uint balance = balances[msg.sender];
 
@@ -76,7 +92,8 @@ contract Operations {
     assert(value <= balance);
 
     balances[msg.sender] -= value;
-    addr.transfer(value);
+    bytes memory empty;
+    exy.transfer(addr, value, empty);
   }
 
   function settlePayment(address sender, address recipient, uint value) private {
@@ -84,7 +101,7 @@ contract Operations {
     balances[recipient] += value;
   }
 
-  function getActiveCall(address caller, address recipient) internal returns (Call call) {
+  function getActiveCall(address caller, address recipient) public view returns (Call call) {
     return calls[caller][recipient];
   }
 

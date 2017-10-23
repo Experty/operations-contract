@@ -16,11 +16,14 @@ contract Operations {
   struct Call {
     uint ratePerS;
     uint timestamp;
+    bool isFinished;
   }
 
   mapping (address => uint) public balances;
   mapping (address => bool) public activeCaller;
   mapping (address => mapping (address => Call)) public calls;
+
+  event Error(string message);
 
   ERC223Token public exy;
 
@@ -33,19 +36,24 @@ contract Operations {
   // }
 
   // falback for EXY deposits
-//   function tokenFallback(address _from, uint _value, bytes _data) public {
-//     balances[_from] += _value;
-//   };
+  function tokenFallback(address _from, uint _value, bytes _data) public {
+    balances[_from] += _value;
+  };
 
   function withdraw(uint value) public {
-
     // dont allow to withdraw any balance if user have active call
-    assert(!activeCaller[msg.sender]);
+    if (activeCaller[msg.sender]) {
+      Error('Can`t withdraw funds until call is not finished');
+      throw;
+    }
 
     uint balance = balances[msg.sender];
 
     // throw if balance is lower than requested value
-    assert(value <= balance);
+    if (balance < value) {
+      Error('Can`t withdraw more than you have in contract');
+      throw;
+    }
 
     balances[msg.sender] -= value;
     bytes memory empty;
@@ -55,19 +63,41 @@ contract Operations {
   function startCall(address caller, address recipient, uint ratePerS, uint timestamp) public {
 
     // caller can have only 1 active call
-    assert(!activeCaller[caller]);
+    if (activeCaller[caller]) {
+      Error('Can`t start another call while actual call');
+      throw;
+    }
+
+    // only caller can init the call
+    if (caller != msg.sender) {
+      Error('Only caller can init the call');
+      throw;
+    }
 
     activeCaller[caller] = true;
 
     calls[caller][recipient] = Call({
       ratePerS: ratePerS,
-      timestamp: timestamp
+      timestamp: timestamp,
+      isFinished: false
     });
   }
 
   function endCall(address caller, address recipient, uint timestamp) public {
+
+    // only caller can init the call
+    if (caller != msg.sender && recipient != msg.sender) {
+      Error('Only caller or recipient can end call');
+      throw;
+    }
+
     Call memory call = calls[caller][recipient];
-    require(timestamp > call.timestamp);
+
+    // cant finish call twice
+    if (call.isFinished) {
+      Error('Can`t finish single call more than once');
+      throw;
+    }
 
     uint duration = timestamp - call.timestamp;
     uint cost = duration * call.ratePerS;
@@ -78,6 +108,7 @@ contract Operations {
     }
 
     activeCaller[caller] = false;
+    calls[caller][recipient].isFinished = true;
 
     settlePayment(caller, recipient, maxCost);
   }

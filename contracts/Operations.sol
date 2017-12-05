@@ -1,6 +1,6 @@
 pragma solidity ^0.4.4;
 
-// kovan: 0x2F3656F60bc6862f2E675a8c8cca354524d53c46
+// kovan:
 
 
 contract ERC223Token {
@@ -8,11 +8,6 @@ contract ERC223Token {
 }
 
 contract Operations {
-
-  struct Call {
-    uint timestamp;
-    bool isFinished;
-  }
 
   mapping (address => uint) public balances;
   mapping (address => bytes32) public activeCall;

@@ -10,26 +10,18 @@ contract ERC223Token {
 contract Operations {
 
   struct Call {
-    uint ratePerS;
     uint timestamp;
     bool isFinished;
   }
 
   mapping (address => uint) public balances;
-  mapping (address => bool) public activeCaller;
-  mapping (address => mapping (address => Call)) public calls;
-
-  event Error(string message);
+  mapping (address => bytes32) public activeCall;
 
   ERC223Token public exy;
 
   function Operations() public {
     exy = ERC223Token(0x1cB96a14c8f2dfdb198E3Bd0780f9fd69afD239f);
   }
-
-  // function deposit() payable {
-  //   balances[msg.sender] += msg.value;
-  // }
 
   // falback for EXY deposits
   function tokenFallback(address _from, uint _value, bytes _data) public {
@@ -38,98 +30,50 @@ contract Operations {
 
   function withdraw(uint value) public {
     // dont allow to withdraw any balance if user have active call
-    if (activeCaller[msg.sender]) {
-      Error('Can`t withdraw funds until call is not finished');
-      throw;
-    }
+    require(activeCall[msg.sender] == 0x0);
 
     uint balance = balances[msg.sender];
 
     // throw if balance is lower than requested value
-    if (balance < value) {
-      Error('Can`t withdraw more than you have in contract');
-      throw;
-    }
+    require(balance < value);
 
     balances[msg.sender] -= value;
     bytes memory empty;
     exy.transfer(msg.sender, value, empty);
   }
 
-  function startCall(address caller, address recipient, uint ratePerS, uint timestamp) public {
+  function startCall(uint timestamp, uint8 _v, bytes32 _r, bytes32 _s) public {
+    // address caller == ecrecover(...)
+    // address recipient == msg.sender
+    bytes32 callHash = keccak256('Experty.io startCall:', msg.sender, timestamp);
+    address caller = ecrecover(callHash, _v, _r, _s);
 
-    // caller can have only 1 active call
-    if (activeCaller[caller]) {
-      Error('Can`t start another call while actual call');
-      throw;
-    }
+    // caller cant start more than 1 call
+    require(activeCall[caller] == 0x0);
 
-    // only caller can init the call
-    if (caller != msg.sender) {
-      Error('Only caller can init the call');
-      throw;
-    }
-
-    activeCaller[caller] = true;
-
-    calls[caller][recipient] = Call({
-      ratePerS: ratePerS,
-      timestamp: timestamp,
-      isFinished: false
-    });
+    activeCall[caller] = callHash;
   }
 
-  function endCall(address caller, address recipient, uint timestamp) public {
+  function endCall(bytes32 callHash, uint amount, uint8 _v, bytes32 _r, bytes32 _s) public {
+    bytes32 endHash = keccak256('Experty.io endCall:', callHash, amount);
+    address caller = ecrecover(endHash, _v, _r, _s);
 
-    // only caller can init the call
-    if (caller != msg.sender && recipient != msg.sender) {
-      Error('Only caller or recipient can end call');
-      throw;
+    // check if call hash was created by caller
+    require(activeCall[caller] == callHash);
+
+    uint maxAmount = amount;
+    if (maxAmount > balances[caller]) {
+      maxAmount = balances[caller];
     }
 
-    Call memory call = calls[caller][recipient];
+    settlePayment(caller, recipient, maxAmount);
 
-    // cant finish call twice
-    if (call.isFinished) {
-      Error('Can`t finish single call more than once');
-      throw;
-    }
-
-    uint duration = timestamp - call.timestamp;
-    uint cost = duration * call.ratePerS;
-
-    uint maxCost = cost;
-    if (maxCost > balances[caller]) {
-      maxCost = balances[caller];
-    }
-
-    activeCaller[caller] = false;
-    calls[caller][recipient].isFinished = true;
-
-    settlePayment(caller, recipient, maxCost);
-  }
-
-  function transfer(address addr, uint256 value) public {
-    // dont allow to transfer any balance if user have active call
-    assert(!activeCaller[msg.sender]);
-
-    uint balance = balances[msg.sender];
-
-    // throw if balance is lower than requested value
-    assert(value <= balance);
-
-    balances[msg.sender] -= value;
-    bytes memory empty;
-    exy.transfer(addr, value, empty);
+    activeCall[caller] = 0x0;
   }
 
   function settlePayment(address sender, address recipient, uint value) private {
     balances[sender] -= value;
     balances[recipient] += value;
-  }
-
-  function getActiveCall(address caller, address recipient) public view returns (Call call) {
-    return calls[caller][recipient];
   }
 
 }

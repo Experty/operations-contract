@@ -61,10 +61,16 @@ contract Operations {
       maxAmount = balances[caller];
     }
 
-    settlePayment(caller, recipient, maxAmount);
+    settlePayment(caller, msg.sender, maxAmount);
 
     activeCall[caller] = 0x0;
   }
+/*
+  // end call can be requested by caller
+  // if recipient did not published it
+  function endCallRequest() public {
+
+  }*/
 
   function settlePayment(address sender, address recipient, uint value) private {
     balances[sender] -= value;

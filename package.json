@@ -1,0 +1,27 @@
+{
+  "name": "operations-contract",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Experty/operations-contract.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/Experty/operations-contract/issues"
+  },
+  "homepage": "https://github.com/Experty/operations-contract#readme",
+  "dependencies": {
+    "bn": "^1.0.1",
+    "eth-lib": "^0.2.5",
+    "ethereumjs-abi": "^0.6.5",
+    "ethereumjs-util": "^5.1.2",
+    "solidity-sha3": "^0.4.1",
+    "web3": "^1.0.0-beta2"
+  }
+}

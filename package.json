@@ -22,6 +22,6 @@
     "ethereumjs-abi": "^0.6.5",
     "ethereumjs-util": "^5.1.2",
     "solidity-sha3": "^0.4.1",
-    "web3": "^1.0.0-beta2"
+    "web3": "^1.0.0-beta.26"
   }
 }

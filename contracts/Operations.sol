@@ -39,8 +39,8 @@ contract Operations {
 
   function startCall(uint timestamp, uint8 _v, bytes32 _r, bytes32 _s) public {
     // address caller == ecrecover(...)
-    // address recipient == msg.sender
-    bytes32 callHash = keccak256('Experty.io startCall:', msg.sender, timestamp);
+    address memory recipient = msg.sender;
+    bytes32 memory callHash = keccak256('Experty.io startCall:', recipient, timestamp);
     address caller = ecrecover(callHash, _v, _r, _s);
 
     // caller cant start more than 1 call
@@ -50,7 +50,8 @@ contract Operations {
   }
 
   function endCall(bytes32 callHash, uint amount, uint8 _v, bytes32 _r, bytes32 _s) public {
-    bytes32 endHash = keccak256('Experty.io endCall:', callHash, amount);
+    address memory recipient = msg.sender;
+    bytes32 memory endHash = keccak256('Experty.io endCall:', recipient, callHash, amount);
     address caller = ecrecover(endHash, _v, _r, _s);
 
     // check if call hash was created by caller

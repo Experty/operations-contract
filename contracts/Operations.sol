@@ -1,6 +1,6 @@
 pragma solidity ^0.4.4;
 
-// kovan: 0xa4cfea553464f9b9dd262e621d17d16a89a47e9b
+// kovan: 0xcd31ff154cf9612e4fc863cf750b5ea106dba652
 
 contract ERC223Token {
   function transfer(address _from, uint _value, bytes _data) public;
@@ -87,7 +87,7 @@ contract Operations {
 
   // endCall can be called by caller only if he requested
   // endCall more than endCallRequestDelay ago
-  function endCall() public {
+  function forceEndCall() public {
     // only caller can request end his call
     require(activeCall[msg.sender] != 0x0);
     // endCallRequestDate needs to be set

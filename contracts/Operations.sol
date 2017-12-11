@@ -12,6 +12,10 @@ contract Operations {
   mapping (address => uint) public balances;
   mapping (address => bytes32) public activeCall;
 
+  mapping (address => uint) public endCallRequestDate;
+
+  uint endCallRequestDelay = 1 hours;
+
   ERC223Token public exy;
 
   function Operations() public {
@@ -46,7 +50,12 @@ contract Operations {
     // caller cant start more than 1 call
     require(activeCall[caller] == 0x0);
 
+    // save callHash for this caller
     activeCall[caller] = callHash;
+
+    // clean endCallRequestDate for this address
+    // if it was set before
+    endCallRequestDate[caller] = 0;
   }
 
   function endCall(bytes32 callHash, uint amount, uint8 _v, bytes32 _r, bytes32 _s) public {
@@ -67,12 +76,28 @@ contract Operations {
     activeCall[caller] = 0x0;
   }
 
-/*
   // end call can be requested by caller
   // if recipient did not published it
-  function endCallRequest() public {
+  function requestEndCall() public {
+    // only caller can request end his call
+    require(activeCall[msg.sender] != 0x0);
 
-  }*/
+    // save current timestamp
+    endCallRequestDate[msg.sender] = block.timestamp;
+  }
+
+  // endCall can be called by caller only if he requested
+  // endCall more than endCallRequestDelay ago
+  function endCall() public {
+    // only caller can request end his call
+    require(activeCall[msg.sender] != 0x0);
+    // endCallRequestDate needs to be set
+    require(endCallRequestDate[msg.sender] != 0);
+    require(endCallRequestDate[msg.sender] + endCallRequestDelay < block.timestamp);
+
+    endCallRequestDate[msg.sender] = 0;
+    activeCall[msg.sender] = 0x0;
+  }
 
   function settlePayment(address sender, address recipient, uint value) private {
     balances[sender] -= value;

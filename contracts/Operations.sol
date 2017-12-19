@@ -11,6 +11,9 @@ contract Operations {
   mapping (address => uint) public balances;
   mapping (address => bytes32) public activeCall;
 
+  // remember who was call recipient based on callHash
+  mapping (bytes32 => address) public recipientsMap;
+
   mapping (address => uint) public endCallRequestDate;
 
   uint endCallRequestDelay = 1 hours;
@@ -51,6 +54,7 @@ contract Operations {
 
     // save callHash for this caller
     activeCall[caller] = callHash;
+    recipientsMap[callHash] = recipient;
 
     // clean endCallRequestDate for this address
     // if it was set before
@@ -58,7 +62,12 @@ contract Operations {
   }
 
   function endCall(bytes32 callHash, uint amount, uint8 _v, bytes32 _r, bytes32 _s) public {
-    address recipient = msg.sender;
+    // get recipient from map using callHash
+    address recipient = recipientsMap[callHash];
+
+    // only recipient can push this transaction
+    require(recipient == msg.sender);
+
     bytes32 endHash = keccak256('Experty.io endCall:', recipient, callHash, amount);
     address caller = ecrecover(endHash, _v, _r, _s);
 
@@ -70,9 +79,12 @@ contract Operations {
       maxAmount = balances[caller];
     }
 
-    settlePayment(caller, msg.sender, maxAmount);
-
+    // remove recipient address from map
+    recipientsMap[callHash] = 0x0;
+    // clean callHash from caller map
     activeCall[caller] = 0x0;
+
+    settlePayment(caller, msg.sender, maxAmount);
   }
 
   // end call can be requested by caller
@@ -95,6 +107,10 @@ contract Operations {
     require(endCallRequestDate[msg.sender] + endCallRequestDelay < block.timestamp);
 
     endCallRequestDate[msg.sender] = 0;
+
+    // remove recipient address from map
+    recipientsMap[activeCall[msg.sender]] = 0x0;
+    // clean callHash from caller map
     activeCall[msg.sender] = 0x0;
   }
 

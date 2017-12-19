@@ -1,6 +1,6 @@
 pragma solidity ^0.4.4;
 
-// kovan: 0xcd31ff154cf9612e4fc863cf750b5ea106dba652
+// kovan: 0x162f923c1fffb89737a602caf8b34572a54e192a
 
 contract ERC223Token {
   function transfer(address _from, uint _value, bytes _data) public;

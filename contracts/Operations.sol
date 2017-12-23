@@ -1,6 +1,6 @@
 pragma solidity ^0.4.4;
 
-// kovan: 0x162f923c1fffb89737a602caf8b34572a54e192a
+// kovan: 0x514998ba4958809f9374dabadc222b4c64f8766f
 
 contract ERC223Token {
   function transfer(address _from, uint _value, bytes _data) public;
@@ -35,8 +35,8 @@ contract Operations {
 
     uint balance = balances[msg.sender];
 
-    // throw if balance is lower than requested value
-    require(balance < value);
+    // requested value cant be greater than balance
+    require(value <= balance);
 
     balances[msg.sender] -= value;
     bytes memory empty;

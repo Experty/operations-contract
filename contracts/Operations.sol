@@ -1,6 +1,6 @@
 pragma solidity ^0.4.4;
 
-// kovan: 0x514998ba4958809f9374dabadc222b4c64f8766f
+// kovan: 0x568854a0bc1952ed44f8c70088dbdc2c36acb45d
 
 contract ERC223Token {
   function transfer(address _from, uint _value, bytes _data) public;
@@ -21,7 +21,7 @@ contract Operations {
   ERC223Token public exy;
 
   function Operations() public {
-    exy = ERC223Token(0x1cB96a14c8f2dfdb198E3Bd0780f9fd69afD239f);
+    exy = ERC223Token(0x837ae9b112de7800dc650e9c47a64efd836d072d);
   }
 
   // falback for EXY deposits

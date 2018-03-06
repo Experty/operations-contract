@@ -1,6 +1,6 @@
 pragma solidity ^0.4.4;
 
-// mainnet: 0x629bfba9fd3d71cfe883bbb625c865072e301805
+//   kovan: 0xf6b1c79e4f6eb3f08dead5c81dc866d66de91f62
 
 contract ERC223Token {
   function transfer(address _from, uint _value, bytes _data) public;
@@ -85,6 +85,8 @@ contract Operations {
     activeCall[caller] = 0x0;
 
     settlePayment(caller, msg.sender, maxAmount);
+
+    EndCall(caller, msg.sender, maxAmount);
   }
 
   // end call can be requested by caller
@@ -119,4 +121,5 @@ contract Operations {
     balances[recipient] += value;
   }
 
+  event EndCall(address caller, address recipient, uint amount);
 }

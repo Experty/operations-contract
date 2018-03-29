@@ -1,9 +1,9 @@
 pragma solidity ^0.4.4;
 
-//   kovan: 0xf6b1c79e4f6eb3f08dead5c81dc866d66de91f62
+//   kovan: 0xd56ba519aa5163382a3fb404b20806e6cf310b5a
 
-contract ERC223Token {
-  function transfer(address _from, uint _value, bytes _data) public;
+contract ERC20Token {
+  function transfer(address _to, uint _value) public;
 }
 
 contract Operations {
@@ -18,10 +18,10 @@ contract Operations {
 
   uint endCallRequestDelay = 1 hours;
 
-  ERC223Token public exy;
+  ERC20Token public exy;
 
   function Operations() public {
-    exy = ERC223Token(0xFA74F89A6d4a918167C51132614BbBE193Ee8c22);
+    exy = ERC20Token(0x1e8E757AaF5844a9A9364C2ebC24Ed3a1490994a);
   }
 
   // falback for EXY deposits
@@ -39,8 +39,7 @@ contract Operations {
     require(value <= balance);
 
     balances[msg.sender] -= value;
-    bytes memory empty;
-    exy.transfer(msg.sender, value, empty);
+    exy.transfer(msg.sender, value);
   }
 
   function startCall(uint timestamp, uint8 _v, bytes32 _r, bytes32 _s) public {
@@ -86,7 +85,7 @@ contract Operations {
 
     settlePayment(caller, msg.sender, maxAmount);
 
-    EndCall(caller, msg.sender, maxAmount);
+    emit EndCall(caller, msg.sender, maxAmount);
   }
 
   // end call can be requested by caller
